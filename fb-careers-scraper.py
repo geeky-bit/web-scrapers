@@ -10,13 +10,13 @@ def job_info(url):
 	soup = BeautifulSoup(html, "lxml")
 	job_title = soup.h2.contents
 
-	job_responsibilities = soup.select("h4:nth-of-type(1) div.fcb")
+	job_responsibilities = soup.select("h4:nth-of-type(1) ~ div")
 	pretty_job_responsibilities = []
 	for resp in job_responsibilities:
 		resp = resp.get_text()
 		pretty_job_responsibilities.append(resp)
 
-	job_requirements = soup.find_all("div", class_="fcb")
+	job_requirements = soup.select("h4:nth-of-type(2) ~ div")
 	pretty_job_requirements = []
 	for req in job_requirements:
 		req = req.get_text()
