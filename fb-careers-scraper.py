@@ -10,6 +10,7 @@ def job_info(url):
 	soup = BeautifulSoup(html, "lxml")
 	job_title = soup.h2.contents
 
+	# Finds all div siblings of 1st h4 tag
 	job_responsibilities = soup.select("h4:nth-of-type(1) ~ div")
 	pretty_job_responsibilities = []
 	for resp in job_responsibilities:
