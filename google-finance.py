@@ -10,6 +10,7 @@ import urllib.request
 # from sys import argv
 import re
 import math
+import datetime
 
 # script, theurl = argv
 
@@ -38,11 +39,20 @@ def append_page_figures(url):
 			value = value[0][:-1]
 			if value[0].isdigit():
 				value = float(value.replace(',',''))
+			elif value[0].isalpha():
+				value = convert_date(value)
 			row_data.append(value)
+		
+
 		# Take away the dash for volume
 		row_data = row_data[:-1]
 #		print(row_data)
 		stock_data.append(row_data)
+
+def convert_date(date):
+	"""Converts e.g. 'Sep 1, 2016' to '2016-09-01'. """
+	return datetime.datetime.strptime(date, '%b %d, %Y').strftime('%Y-%m-%d')
+
 
 def number_of_pages():
 	"""Returns tho number of pages you need to scrape to get all the
@@ -64,18 +74,19 @@ def assemble_stock_query(start):
 	return query
 
 def write_to_file(data, filename, header=None):
+	"""Writes data and header to file."""
 	with open(filename, "a") as f:
 		if header != None:
-			f.write(str(header)[1:-1])
+			f.write(",".join(str(v) for v in header))
 			f.write("\n")
 		for row in stock_data:
-			f.write(str(row)[1:-1])
+			f.write(",".join(str(v) for v in row))
 			f.write("\n")
 
 # Initialise Variables
 gfinance_url = "https://www.google.co.uk/finance/historical?"
-total_rows = 40
-rows_per_page = 20	
+total_rows = 8188
+rows_per_page = 200	
 q = {
 	"cid": "12590587",
 	"startdate": "Jan+1%2C+1977",
@@ -86,6 +97,7 @@ q = {
 stock_data = []
 header = ["Date", "Open", "High", "Low", "Close"]
 filename = "ftse100.csv"
+
 # Get URL for each page, scrape data from each page and 
 # append scraped data to `stock_data`.
 for page_index in range(number_of_pages()):
@@ -97,13 +109,8 @@ for page_index in range(number_of_pages()):
 print(stock_data[:20])
 print(stock_data[-20:])
 
-write_to_file(stock_data, filename, header=header)
-
 # Write data to file
-
-# Add header row
-
-# Add other rows
+write_to_file(stock_data, filename, header=header)
 
 # Sample URLs:
 # https://www.google.co.uk/finance/historical?cid=12590587&startdate=Jan+1%2C+1977&enddate=Sep+9%2C+2016&num=200&ei=iIXuV9HQFJfEU42QtNgD&start=200
